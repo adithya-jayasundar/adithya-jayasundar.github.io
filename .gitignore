@@ -7,3 +7,9 @@ yarn-debug.log*
 yarn-error.log*
 .env
 .env.production
+.env.local
+.env.*.local
+*.log
+.vscode/
+.idea/
+
