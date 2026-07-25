@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection, getEntry } from 'astro:content';
+import { formatDate, withBase } from '../lib/format';
+
+const siteEntry = await getEntry('site', 'site');
+const site = siteEntry?.data;
+
+// Normalize tagline: string OR array-of-phrases -> array of lines
+const taglineLines: string[] = Array.isArray(site?.tagline)
+  ? (site!.tagline as string[])
+  : site?.tagline
+    ? [site.tagline as string]
+    : [];
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+type LatestItem = { kind: string; title: string; date: Date; summary: string; href: string; };
+const combined: LatestItem[] = [
+  ...posts.map((p) => ({ kind: 'Blog', title: p.data.title, date: p.data.date, summary: p.data.summary, href: withBase(`/blog/${p.slug}`) })),
+  ...projects.map((p) => ({ kind: 'Projects', title: p.data.title, date: p.data.date, summary: p.data.summary, href: withBase(`/projects/${p.slug}`) })),
+].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+const latest = combined[0];
+---
+<BaseLayout>
+  <section class="hero">
+    {site?.photo ? (
+      <div class="portrait">
+        <img src={withBase(site.photo)} alt={site.photoAlt ?? site.name ?? 'Portrait'} />
+      </div>
+    ) : site?.avatarInitial ? (
+      <div class="portrait" aria-hidden="true">{site.avatarInitial}</div>
+    ) : null}
+    {site?.name && <p class="eyebrow">{site.name}</p>}
+    {taglineLines.length > 0 && (
+      <h1>
+        {taglineLines.map((line) => (
+          <span class="line">{line}.</span>
+        ))}
+      </h1>
+    )}
+    {site?.intro && <p class="intro">{site.intro}</p>}
+  </section>
+
+  {latest && (
+    <>
+      <div class="section-row">
+        <span class="label">Latest</span>
+        <span class="meta">{formatDate(latest.date)}</span>
+      </div>
+      <article class="latest">
+        <h3><a href={latest.href}>{latest.title}</a></h3>
+        {latest.summary && <p class="summary">{latest.summary}</p>}
+        <div class="meta">{latest.kind} · 1 min</div>
+      </article>
+    </>
+  )}
+
+  <div class="section-row">
+    <span class="label">Blog</span>
+    <span class="meta"><a href={withBase('/blog')}>See all →</a></span>
+  </div>
+  {posts.length === 0 ? (
+    <p class="muted">No posts yet. Add a Markdown file to <code>src/content/blog/</code>.</p>
+  ) : (
+    <ol class="post-list">
+      {posts.map((p) => (
+        <li>
+          <div>
+            <div class="row">
+              <a class="title" href={withBase(`/blog/${p.slug}`)}>{p.data.title}</a>
+              <span class="date">{formatDate(p.data.date)}</span>
+            </div>
+            {p.data.summary && <p class="summary">{p.data.summary}</p>}
+          </div>
+        </li>
+      ))}
+    </ol>
+  )}
+</BaseLayout>

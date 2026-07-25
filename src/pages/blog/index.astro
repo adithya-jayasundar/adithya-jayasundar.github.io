@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { formatDate, withBase } from '../../lib/format';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<BaseLayout title="Blog" description="All blog posts.">
+  <header class="article-header">
+    <p class="eyebrow">Writing</p>
+    <h1>Blog</h1>
+    <p class="lede">Notes, essays, and half-finished thoughts. Newest first.</p>
+  </header>
+
+  {posts.length === 0 ? (
+    <p class="muted">No posts yet.</p>
+  ) : (
+    <ol class="post-list">
+      {posts.map((p) => (
+        <li>
+          <div>
+            <div class="row">
+              <a class="title" href={withBase(`/blog/${p.slug}`)}>{p.data.title}</a>
+              <span class="date">{formatDate(p.data.date)}</span>
+            </div>
+            {p.data.summary && <p class="summary">{p.data.summary}</p>}
+          </div>
+        </li>
+      ))}
+    </ol>
+  )}
+</BaseLayout>

@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/format';
+---
+<BaseLayout title="Not found">
+  <h1>Not found</h1>
+  <p class="muted">That page doesn't exist (yet).</p>
+  <p><a href={withBase('/')}>← Go home</a></p>
+</BaseLayout>

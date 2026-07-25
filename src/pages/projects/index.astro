@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { formatDate, withBase } from '../../lib/format';
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<BaseLayout title="Projects" description="A list of things I've made or am making.">
+  <header class="article-header">
+    <p class="eyebrow">Making</p>
+    <h1>Projects</h1>
+    <p class="lede">Things I've built or am building. Some active, some paused, some archived.</p>
+  </header>
+
+  {projects.length === 0 ? (
+    <p class="muted">No projects yet.</p>
+  ) : (
+    <ol class="post-list">
+      {projects.map((p) => (
+        <li>
+          <div>
+            <div class="row">
+              <a class="title" href={withBase(`/projects/${p.slug}`)}>{p.data.title}</a>
+              <span class="date">{formatDate(p.data.date)}</span>
+            </div>
+            {p.data.summary && <p class="summary">{p.data.summary}</p>}
+          </div>
+        </li>
+      ))}
+    </ol>
+  )}
+</BaseLayout>

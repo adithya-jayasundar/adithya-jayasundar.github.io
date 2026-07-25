@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
+import { formatDate, withBase } from '../lib/format';
+
+const entry = await getEntry('resume', 'resume');
+if (!entry) throw new Error('Missing src/content/resume/resume.md');
+const { Content } = await entry.render();
+const { pdf, pdfLabel, updated, title } = entry.data;
+---
+<BaseLayout title="Resume">
+  <article>
+    <header class="article-header">
+      {updated && (
+        <div class="meta">Updated {formatDate(updated)}</div>
+      )}
+      <div class="resume-title-row">
+        <h1>{title ?? 'Resume'}</h1>
+        {pdf && (
+          <a class="download-btn" href={withBase(pdf)} download>
+            <span aria-hidden="true" class="dl-icon">↓</span>
+            <span>{pdfLabel ?? 'Download PDF'}</span>
+          </a>
+        )}
+      </div>
+    </header>
+    <div class="article-body resume-body">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,72 @@
+---
+import '../styles/global.css';
+import { getEntry } from 'astro:content';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+
+const siteEntry = await getEntry('site', 'site');
+const siteName = siteEntry?.data.name ?? 'Notebook';
+const taglineRaw = siteEntry?.data.tagline;
+const tagline = Array.isArray(taglineRaw) ? taglineRaw.join(' ') : (taglineRaw ?? '');
+const avatarInitial = siteEntry?.data.avatarInitial ?? siteName.trim().charAt(0);
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const href = (p: string) => `${base}${p.startsWith('/') ? p : '/' + p}`;
+
+const pathname = new URL(Astro.request.url).pathname.replace(base, '') || '/';
+const isActive = (p: string) => {
+  if (p === '/') return pathname === '/' || pathname === '';
+  return pathname.startsWith(p);
+};
+
+const pageTitle = title ? `${siteName} — ${title}` : `${siteName} — ${tagline}`;
+const pageDescription = description ?? tagline;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%92%3C/text%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a class="brand" href={href('/')}>
+          <span class="name">{siteName}</span>
+          <span class="badge">Notebook</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href={href('/blog')} aria-current={isActive('/blog') ? 'page' : undefined}>Blog</a>
+          <a href={href('/projects')} aria-current={isActive('/projects') ? 'page' : undefined}>Projects</a>
+          <a href={href('/resume')} aria-current={isActive('/resume') ? 'page' : undefined}>Resume</a>
+          <a href={href('/contact')} aria-current={isActive('/contact') ? 'page' : undefined}>Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="column">
+          <slot />
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        © {new Date().getFullYear()} {siteName}
+      </div>
+    </footer>
+
+    <a class="avatar-fab" href={href('/')} aria-label="Home">{avatarInitial}</a>
+  </body>
+</html>

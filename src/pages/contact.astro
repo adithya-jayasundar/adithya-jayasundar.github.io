@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('contact', 'contact');
+if (!entry) throw new Error('Missing src/content/contact/contact.md');
+const { Content } = await entry.render();
+const { email, links, title } = entry.data;
+---
+<BaseLayout title={title ?? 'Contact'}>
+  <article>
+    <header class="article-header">
+      <p class="eyebrow">Get in touch</p>
+      <h1>{title ?? 'Contact'}</h1>
+    </header>
+
+    <div class="article-body">
+      <Content />
+    </div>
+
+    <section class="contact-grid">
+      {email && (
+        <div class="contact-block">
+          <p class="label">Email</p>
+          <a class="email" href={`mailto:${email}`}>{email}</a>
+        </div>
+      )}
+      {links && links.length > 0 && (
+        <div class="contact-block">
+          <p class="label">Elsewhere</p>
+          <ul class="contact-links">
+            {links.map((l: { label: string; url: string }) => (
+              <li>
+                <a href={l.url} rel="me noopener">{l.label}</a>
+                <span class="arrow" aria-hidden="true">↗</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  </article>
+</BaseLayout>
