@@ -17,7 +17,7 @@ When I was asked to compact an Apache Iceberg table, I quickly realized that und
 
 This post is my attempt to document that learning journey.
 
-The ideas in this post are inspired by *Apache Iceberg: The Definitive Guide* alongside my own experience while working on this compaction activity. :contentReference[oaicite:0]{index=0}
+The ideas in this post are inspired by *Apache Iceberg: The Definitive Guide* alongside my own experience while working on this compaction activity. *Apache Iceberg: The Definitive Guide: Data Lakehouse Functionality, Performance, and Scalability on the Data Lake*
 
 ---
 
