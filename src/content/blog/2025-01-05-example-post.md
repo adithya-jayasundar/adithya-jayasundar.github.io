@@ -191,15 +191,7 @@ That is the evolution of modern analytical systems.
 To understand why Iceberg behaves differently from previous table formats, it helps to begin from the bottom and move upward through each metadata layer.
 
 ```
-Catalog
-    │
-Metadata File
-    │
-Manifest List
-    │
-Manifest Files
-    │
-Parquet Files
+[iceberg-architecture]
 ```
 
 Every layer has one responsibility.
@@ -421,3 +413,7 @@ Over time, delete files and many small data files accumulate.
 At some point, Iceberg rewrites them into larger, cleaner data files to restore query performance.
 
 That compaction process—and the different optimization strategies around it—is what I'll cover in **Part 2**.
+
+
+
+[iceberg-architecture] :/public/uuid=598F9AF6-2227-4B98-A51F-14604439BA30&code=001&library=1&type=1&mode=1&loc=true&cap=true.jpeg
