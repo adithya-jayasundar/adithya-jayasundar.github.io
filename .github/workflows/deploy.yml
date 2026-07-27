@@ -23,6 +23,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        with:
+          static_site_generator: astro
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -38,6 +43,9 @@ jobs:
           # Astro reads BASE_URL from astro.config.mjs; nothing needed here
           # unless you want to override per-environment.
           NODE_ENV: production
+
+      - name: Disable Jekyll processing
+        run: touch ./dist/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
